@@ -7,7 +7,7 @@ import java.util.Scanner;
 /**
  * Interface com menus texto para manipular uma agenda de contatos.
  * 
- * @author nazarenoandrade
+ * @author nazarenoandrade e Alef Adonis dos Santos Carlos
  *
  */
 public class MainAgenda {
@@ -99,51 +99,57 @@ public class MainAgenda {
 	*/
 	private static void listaContatos(Agenda agenda) {
 		System.out.println("\nLista de contatos: ");
-		System.out.println("\n"+ agenda.getListaContatos());
+		System.out.println("\n"+ agenda.listaContatos());
 	}
 
 	/**
-	 * Imprime os detalhes de um dos contatos da agenda. 
+	 * Pega os dados de um contato e exibe.
 	 * 
 	 * @param agenda A agenda.
 	 * @param scanner Scanner para capturar qual contato.
+	 * 
+	 * @return string com os dados de um contato
 	 */
 	private static String exibeContato(Agenda agenda, Scanner scanner) {
 		System.out.print("\nContato> ");
 		int posicao = scanner.nextInt();
 		
-		return agenda.getContato(posicao);
+		return agenda.exibeContato(posicao);
 		
 	}
 
 	/**
-	 * Cadastra um contato na agenda. 
+	 * Menu para cadastro de um contato na agenda. 
 	 * 
 	 * @param agenda A agenda.
 	 * @param scanner Scanner para pedir informações do contato.
+	 * 
+	 * @return mensagem de erro caso a entrada esteja errado ou uma mensagem 
+	 * de sucesso.
 	 */
 	private static String cadastraContato(Agenda agenda, Scanner scanner) {
 		System.out.print("\nPosição> ");
 		int posicao = scanner.nextInt();
-		if(agenda.getPosicaoInvalida(posicao)) {
+		if(agenda.ehPosicaoInvalida(posicao)) {
 			return "POSIÇÃO INVÁLIDA";
 		}
-
+		scanner.nextLine();
+		
 		System.out.print("\nNome> ");
-		String nome = scanner.next();
-		if(nome.equals("") || nome.equals(null)) {
+		String nome = scanner.nextLine();
+		if(nome.isBlank()) {
 			return "CADASTRO INVÁLIDO";
 		}
 		
 		System.out.print("\nSobrenome> ");
-		String sobrenome = scanner.next();
-		if(sobrenome.equals("") || sobrenome.equals(null)) {
+		String sobrenome = scanner.nextLine();
+		if(sobrenome.isBlank()) {
 			return "CADASTRO INVÁLIDO";
 		}
 		
 		System.out.print("\nTelefone> ");
 		String telefone = scanner.next();
-		if(telefone.equals("") || telefone.equals(null)) {
+		if(telefone.isBlank()) {
 			return "CADASTRO INVÁLIDO";
 		}
 		scanner.nextLine();
@@ -172,36 +178,65 @@ public class MainAgenda {
 		System.out.println("Carregamos " + carregados + " registros.");
 	}
 	
+	/**
+	 * Imprime a lista de favoritos
+	 * @param agenda agenda que está sendo usada
+	 */
 	private static void listaFavorito(Agenda agenda) {
-		System.out.println("\n"+ agenda.getListaFavoritos());
+		System.out.println("\n"+ agenda.listaFavoritos());
 	}
 	
-	private static String adicionaFavorito(Agenda agenda, Scanner scanner) {
+	/**
+	 * Menu para adicionar um contato a lista de favoritos
+	 * 
+	 * @param agenda agenda sendo utilizada
+	 * @param scanner scanner para leitura das entradas
+	 * 
+	 * @return mensagem de erro ou uma mensagem de sucesso 
+	 */
+	private static String adicionaFavorito(Agenda agenda, Scanner scanner) {	
+		try {
 		System.out.println("\nContato> ");
 		int posicaoContato = scanner.nextInt();
 		
 		System.out.println("\nPosição> ");
 		int posicaoFavorito = scanner.nextInt();
 		
-		return agenda.adicionaFavorito(posicaoContato, posicaoFavorito);
+		return agenda.adicionaFavorito(posicaoContato, posicaoFavorito);		
+		} catch (NumberFormatException nfe) {
+			return "Número Inválido";
+		}
 	}
-
+	
+	/**
+	 * Menu para adicionar uma taga a um ou mais contatos
+	 * 
+	 * @param agenda agenda que está sendo utilizada
+	 * @param scanner scanner para leitura das entradas
+	 */
 	private static void adicionaTag(Agenda agenda, Scanner scanner) {
 		System.out.println("\nContato(s)>");
 
-		String[] entradas = scanner.nextLine().split(" ");
+		String[] entradas = scanner.next().split(" ");
 		int[] contatosPassados = new int[entradas.length];
 
 		for(int i = 0; i < entradas.length; i++){
 			contatosPassados[i] = Integer.parseInt(entradas[i]);
 		}
-
+		scanner.nextLine();
+		
 		System.out.println("\nTag> ");
-		String tag = scanner.next();
-
+		String tag = scanner.nextLine();
+		if(tag.isBlank()) {
+			System.out.println("\nTag Inválida");
+		}
+		
 		System.out.println("Posicao tag> ");
 		int posicaoTag = scanner.nextInt();
-
-		agenda.adiconaTag(contatosPassados, tag, posicaoTag);
+		if(posicaoTag < 0 || posicaoTag > 5) {
+			System.out.println("Posicao da Tag Inválida");
+		
+			agenda.adicionaTag(contatosPassados, tag, posicaoTag);
+		}
 	}
 }
